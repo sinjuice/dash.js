@@ -144,6 +144,7 @@ function PlaybackController() {
     }
 
     function seek(time, stickToBuffered, internalSeek) {
+        console.log('Seeking PlaybackController');
         if (streamInfo && videoModel) {
             if (internalSeek === true) {
                 if (time !== videoModel.getTime()) {
@@ -492,6 +493,7 @@ function PlaybackController() {
     }
 
     function onPlaybackSeeking() {
+        console.log('seeking onPlaybackSeeking');
         const seekTime = getTime();
         logger.info('Seeking to: ' + seekTime);
         startUpdatingWallclockTime();

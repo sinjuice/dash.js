@@ -202,6 +202,7 @@ function StreamController() {
     }
 
     function jumpGap(time) {
+        console.log('jumpGap');
         const streamProcessors = getActiveStreamProcessors();
         const smallGapLimit = settings.get().streaming.smallGapLimit;
         let seekToPosition;
@@ -250,8 +251,9 @@ function StreamController() {
     }
 
     function onPlaybackSeeking(e) {
+        console.log('onPlaybackSeeking StreamController');
         const seekingStream = getStreamForTime(e.seekTime);
-
+        console.log('onPlaybackSeeking StreamController - ', seekingStream.getId());
         //if end period has been detected, stop timer and reset isPeriodSwitchInProgress
         if (playbackEndedTimerId) {
             stopEndPeriodTimer();
@@ -270,7 +272,9 @@ function StreamController() {
         if (seekingStream && (seekingStream !== activeStream || (preloading && !activeStream.isActive()))) {
             // If we're preloading other stream, the active one was deactivated and we need to switch back
             flushPlaylistMetrics(PlayListTrace.END_OF_PERIOD_STOP_REASON);
+            console.log('before switchStream');
             switchStream(activeStream, seekingStream, e.seekTime);
+            console.log('after switchStream');
         } else {
             flushPlaylistMetrics(PlayListTrace.USER_REQUEST_STOP_REASON);
         }
@@ -389,15 +393,12 @@ function StreamController() {
         let stream = null;
 
         const ln = streams.length;
-
         if (ln > 0) {
             duration += streams[0].getStartTime();
         }
-
         for (let i = 0; i < ln; i++) {
             stream = streams[i];
             duration = parseFloat((duration + stream.getDuration()).toFixed(5));
-
             if (time < duration) {
                 return stream;
             }
@@ -418,7 +419,6 @@ function StreamController() {
         let baseStart = 0;
         let streamStart = 0;
         let streamDur = null;
-
         for (let i = 0; i < streams.length; i++) {
             stream = streams[i];
             streamStart = stream.getStartTime();
@@ -624,14 +624,16 @@ function StreamController() {
                 presentationStartTime: streamsInfo[0].start,
                 clientTimeOffset: timelineConverter.getClientTimeOffset()
             });
-
+            let streams_new = [];
             for (let i = 0, ln = streamsInfo.length; i < ln; i++) {
                 // If the Stream object does not exist we probably loaded the manifest the first time or it was
                 // introduced in the updated manifest, so we need to create a new Stream and perform all the initialization operations
+
                 const streamInfo = streamsInfo[i];
                 let stream = getComposedStream(streamInfo);
 
                 if (!stream) {
+                    console.log('StreamsInfo ', streamInfo);
                     stream = Stream(context).create({
                         manifestModel: manifestModel,
                         mediaPlayerModel: mediaPlayerModel,
@@ -650,14 +652,18 @@ function StreamController() {
                         streamController: instance,
                         settings: settings
                     });
-                    streams.push(stream);
+                    console.log('Pushing new stream ' + stream.getId());
+                    streams_new.push(stream);
                     stream.initialize(streamInfo, protectionController);
                 } else {
+                    console.log('Updating stream ' + stream.getId());
                     stream.updateData(streamInfo);
+                    streams_new.push(stream);
                 }
 
                 dashMetrics.addManifestUpdateStreamInfo(streamInfo);
             }
+            streams = streams_new;
 
             if (!activeStream) {
                 // we need to figure out what the correct starting period is
@@ -1012,7 +1018,8 @@ function StreamController() {
         getActiveStreamProcessors: getActiveStreamProcessors,
         setConfig: setConfig,
         setProtectionData: setProtectionData,
-        reset: reset
+        reset: reset,
+        setMediaDuration: setMediaDuration
     };
 
     setup();

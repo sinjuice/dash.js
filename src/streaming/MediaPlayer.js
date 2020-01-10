@@ -107,6 +107,7 @@ function MediaPlayer() {
     const context = this.context;
     const eventBus = EventBus(context).getInstance();
     let settings = Settings(context).getInstance();
+    console.log(settings);
     const debug = Debug(context).getInstance({settings: settings});
 
     let instance,
@@ -156,6 +157,7 @@ function MediaPlayer() {
         mediaPlayerModel = MediaPlayerModel(context).getInstance();
         videoModel = VideoModel(context).getInstance();
         uriFragmentModel = URIFragmentModel(context).getInstance();
+        console.log(settings);
     }
 
     /**
@@ -443,6 +445,7 @@ function MediaPlayer() {
      * @instance
      */
     function seek(value) {
+        console.log('Seeking MediaPlayer');
         if (!playbackInitialized) {
             throw PLAYBACK_NOT_INITIALIZED_ERROR;
         }
@@ -2022,6 +2025,9 @@ function MediaPlayer() {
         return adapter;
     }
 
+    function getStreamController() {
+        return streamController;
+    }
     instance = {
         initialize: initialize,
         setConfig: setConfig,
@@ -2109,7 +2115,8 @@ function MediaPlayer() {
         getSettings: getSettings,
         updateSettings: updateSettings,
         resetSettings: resetSettings,
-        reset: reset
+        reset: reset,
+        getStreamController: getStreamController
     };
 
     setup();
