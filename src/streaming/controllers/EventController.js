@@ -222,13 +222,15 @@ function EventController() {
                             activeEvents[eventId] = curr;
                         }
                         if (curr.eventStream.schemeIdUri == MPD_RELOAD_SCHEME && curr.eventStream.value == MPD_RELOAD_VALUE) {
-                            if (curr.duration !== 0 || curr.presentationTimeDelta !== 0) { //If both are set to zero, it indicates the media is over at this point. Don't reload the manifest.
+                            if (false && (curr.duration !== 0 || curr.presentationTimeDelta !== 0)) { //If both are set to zero, it indicates the media is over at this point. Don't reload the manifest.
                                 refreshManifest();
                             }
                         } else if (curr.eventStream.schemeIdUri == MPD_CALLBACK_SCHEME && curr.eventStream.value == MPD_CALLBACK_VALUE) {
                             sendCallbackRequest(curr.messageData);
                         } else {
-                            eventBus.trigger(curr.eventStream.schemeIdUri, {event: curr});
+                            if (curr.eventStream.schemeIdUri !== 'urn:custom-data') {
+                                eventBus.trigger(curr.eventStream.schemeIdUri, {event: curr});
+                            }
                         }
                         delete events[eventId];
                     }

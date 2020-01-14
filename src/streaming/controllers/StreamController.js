@@ -202,7 +202,7 @@ function StreamController() {
     }
 
     function jumpGap(time) {
-        console.log('jumpGap');
+        console.log('jumpGap', time);
         const streamProcessors = getActiveStreamProcessors();
         const smallGapLimit = settings.get().streaming.smallGapLimit;
         let seekToPosition;
@@ -624,7 +624,7 @@ function StreamController() {
                 presentationStartTime: streamsInfo[0].start,
                 clientTimeOffset: timelineConverter.getClientTimeOffset()
             });
-            let streams_new = [];
+            //let streams_new = [];
             for (let i = 0, ln = streamsInfo.length; i < ln; i++) {
                 // If the Stream object does not exist we probably loaded the manifest the first time or it was
                 // introduced in the updated manifest, so we need to create a new Stream and perform all the initialization operations
@@ -653,17 +653,18 @@ function StreamController() {
                         settings: settings
                     });
                     console.log('Pushing new stream ' + stream.getId());
-                    streams_new.push(stream);
+                    //streams_new.push(stream);
+                    streams.push(stream);
                     stream.initialize(streamInfo, protectionController);
                 } else {
                     console.log('Updating stream ' + stream.getId());
                     stream.updateData(streamInfo);
-                    streams_new.push(stream);
+                    //streams_new.push(stream);
                 }
 
                 dashMetrics.addManifestUpdateStreamInfo(streamInfo);
             }
-            streams = streams_new;
+            //streams = streams_new;
 
             if (!activeStream) {
                 // we need to figure out what the correct starting period is
