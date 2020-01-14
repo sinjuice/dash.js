@@ -70,7 +70,7 @@ function EventController() {
         activeEvents = {};
         eventInterval = null;
         refreshDelay = 100;
-        lastEventTimerCall = 0;
+        lastEventTimerCall = Date.now() / 1000;
     }
 
     function checkConfig() {
